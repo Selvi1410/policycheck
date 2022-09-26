@@ -1,15 +1,15 @@
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.0"
+      source = "hashicorp/aws"
+      version = "4.32.0"
     }
   }
 }
 
 provider "aws" {
+  # Configuration options
   region = var.aws_region
-  
 }
 
 resource "aws_instance""myec2" {
