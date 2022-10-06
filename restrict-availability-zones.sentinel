@@ -21,7 +21,7 @@ zones_allowed = rule {
     allEC2Instances as _, instance {
     aws_instance.change.after_unknown.availability_zone in allowed_zones
     }
-
+}
 
 # Main rule
 main = rule {
