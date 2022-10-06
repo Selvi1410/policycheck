@@ -1,5 +1,5 @@
 policy "restrict-availability-zones" {
-  source  = "./restrict-az.sentinel"
+  source  = "./restrict-availability-zones.sentinel"
   enforcement_level = "hard-mandatory"
 }
 
