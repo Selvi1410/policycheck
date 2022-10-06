@@ -1,30 +1,29 @@
-# This policy uses the Sentinel tfplan/v2 import to restrict
-# the availability zones used by EC2 instances.
-# This is an easier way to restrict regions than to restrict
 # the region of the AWS provider since that requires the
 # tfconfig/v2 import.
 
 # Import common-functions/tfplan-functions/tfplan-functions.sentinel
 # with alias "plan"
-import "tfplan-functions" as plan
+import "tfplan/v2" as plan
 
+
+aws_instance = filter tfplan.resource_changes as _, rc {
+  rc.type is "aws_instance" and
+  (rc.change.actions contains "create" or rc.change.actions is ["update"])
+}
 # Allowed EC2 Zones
 # Include "null" to allow missing or computed values
 allowed_zones = [
-  "us-east-1a","us-east-1b","us-east-1c","us-east-1d","us-east-1e","us-east-1f",
+  "ap-southeast-1a",
 ]
 
-# Get all EC2 instances
-allEC2Instances = plan.find_resources("aws_instance")
 
-# Filter to EC2 instances with violations
-# Warnings will be printed for all violations since the last parameter is true
-violatingEC2Instances = plan.filter_attribute_not_in_list(allEC2Instances,
-                        "availability_zone", allowed_zones, true)
+zones_allowed = rule {
+    allEC2Instances as _, instance {
+    aws_instance.change.after_unknown.availability_zone in allowed_zones
+    }
+
 
 # Main rule
 main = rule {
-  length(violatingEC2Instances["messages"]) is 0
+  (zones_allowed) else false
 }
-Footer
-© 2022 GitHub, Inc.
